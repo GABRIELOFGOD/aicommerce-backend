@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
+/* eslint-disable prettier/prettier */
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+import { createZodDto } from 'nestjs-zod';
+import { UpdateUserSchema } from '../../schema/user.schema';
+
+export class UpdateUserDto extends createZodDto(UpdateUserSchema) {}

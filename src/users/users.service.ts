@@ -1,6 +1,9 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
+import { Users } from 'src/utils/lib';
 
 @Injectable()
 export class UsersService {
@@ -8,12 +11,12 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll(): UserResponseDto[] {
+    return Users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: number): UserResponseDto {
+    return Users[0];
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

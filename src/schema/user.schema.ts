@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
+import { USER_ROLES } from 'src/types/enum';
 import z from 'zod';
 
-export const UserRoleSchema = z.enum(['admin', 'customer', 'moderator']);
-export type UserRole = z.infer<typeof UserRoleSchema>;
+// export const UserRoleSchema = z.enum(['admin', 'customer', 'moderator']);
+// export type UserRole = z.infer<typeof UserRoleSchema>;
 
 export const UserSchema = z.object({
   id: z.uuid(),
@@ -11,7 +12,8 @@ export const UserSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters long'),
   isDeleted: z.boolean().default(false),
   isBlocked: z.boolean().default(false),
-  role: UserRoleSchema.default('customer'),
+  isVerified: z.boolean().default(false),
+  role: z.enum(USER_ROLES).default('customer'),
   createdAt: z.iso.datetime()
 }).meta({
   id: 'User'

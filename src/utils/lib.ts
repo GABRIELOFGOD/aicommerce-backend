@@ -10,10 +10,12 @@ export const Users: User[] = [
     createdAt: new Date().getDate().toString(),
     isBlocked: false,
     isDeleted: false,
+    isVerified: false,
     role: 'customer',
   },
   {
     id: '2',
+    isVerified: true,
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     password: 'password456',

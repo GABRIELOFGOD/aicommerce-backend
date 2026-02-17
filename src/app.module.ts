@@ -25,7 +25,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
     }),
     AuthModule,
     UsersModule,
-    ProductsModule,
+    ProductsModule
   ],
   controllers: [AppController],
   providers: [AppService,

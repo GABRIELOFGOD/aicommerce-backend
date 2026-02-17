@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -24,11 +25,10 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ZodResponse({ type: UserResponseDto })
-  findOne(@Param('id') id: string): UserResponseDto {
-    return this.usersService.findOne(+id);
+  @Get(':email')
+  @ApiOperation({ summary: 'Get a user by email' })
+  async findOne(@Param('email') email: string): Promise<UserEntity> {
+    return await this.usersService.findOne({ email });
   }
 
   @Patch(':id')

@@ -1,9 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { UsersService } from 'src/users/users.service';
+import { compare } from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private readonly usersService: UsersService
+  ) {}
+  
+  async verifyUser(email: string, password: string) {
+    try {
+      const user = await this.usersService.findOne({ email });
+      const authenticated = await compare(password, user.password);
+      if (!authenticated) throw new UnauthorizedException('Invalid credentials');
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
+  
   create(createAuthDto: CreateAuthDto) {
     return 'This action adds a new auth';
   }

@@ -21,7 +21,7 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>;
 
-export const CreateUserSchema = UserSchema.omit({ id: true, createdAt: true }).meta({
+export const CreateUserSchema = UserSchema.omit({ id: true, createdAt: true, role: true, isDeleted: true, isBlocked: true, isVerified: true, }).meta({
   id: 'CreateUser'
 });
 export type CreateUser = z.infer<typeof CreateUserSchema>;

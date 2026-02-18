@@ -1,43 +1,51 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { compare } from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { Response } from 'express';
+import { TokenPayload } from 'src/types/enum';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
-  
+
   async verifyUser(email: string, password: string) {
     try {
       const user = await this.usersService.findOne({ email });
       const authenticated = await compare(password, user.password);
-      if (!authenticated) throw new UnauthorizedException('Invalid credentials');
+      if (!authenticated)
+        throw new UnauthorizedException('Invalid credentials');
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
-  
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(user: UserEntity, response: Response) {
+    const expiresAccessToken = new Date();
+    expiresAccessToken.setMilliseconds(
+      expiresAccessToken.getTime() +
+      parseInt(
+        this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET_EXPIRATION_MS'),
+      ),
+    )
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const tokenPayload: TokenPayload = { userId: user.id };
+    const accessToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET_EXPIRATION_MS')}ms`,
+    });
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    response.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
+      expires: expiresAccessToken,
+    });
   }
 }
